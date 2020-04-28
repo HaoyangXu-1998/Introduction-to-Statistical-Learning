@@ -3,6 +3,7 @@ import numpy as np
 import os
 import time
 import matplotlib.pyplot as plt
+
 # %%
 Y = np.load('../data/Y.npy')
 X = np.load('../data/X.npy')
