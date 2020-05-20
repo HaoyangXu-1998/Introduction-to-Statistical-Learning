@@ -58,6 +58,13 @@ class load_data:
     def transformY(self):
         self.Y = np.array([1 if each > 0 else 0 for each in self.Y])
         return self
+    
+    def filter_nonzero_Y(self):
+        mask = [i for i, flag in enumerate(self.Y) if flag > 0]
+        self.Type = self.Type[mask]
+        self.X = self.X[mask]
+        self.Y = self.Y[mask]
+        return self
 
     def filter_type(self, cond=lambda x: x == 1):
         mask = [i for i, flag in enumerate(self.Type) if cond(flag)]
