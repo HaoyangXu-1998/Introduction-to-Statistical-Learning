@@ -66,6 +66,13 @@ class load_data:
         self.Y = self.Y[mask]
         return self
 
+    def filter_value(self, cond=lambda x: x != 0):
+        mask = [i for i, flag in enumerate(self.Y) if cond(flag)]
+        self.Type = self.Type[mask]
+        self.X = self.X[mask]
+        self.Y = self.Y[mask]
+        return self
+
     def filter_na(self):
         mask = [i for i, flag in enumerate(self.Y) if flag != -9999]
         self.Type = self.Type[mask]
@@ -83,3 +90,6 @@ class load_data:
                               "train"), MeasureDataset(self.X[mask_valid],
                                                        self.Y[mask_valid],
                                                        "valid")
+    
+    def data(self):
+        return MeasureDataset(self.X,self.Y)
