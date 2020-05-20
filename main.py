@@ -6,6 +6,7 @@ from data import load_data, MeasureDataset
 from model import SimpleCNN
 from tqdm import tqdm
 from sklearn.metrics import classification_report
+from loss import FocalLoss
 
 if __name__ == "__main__":
     data = load_data("data", "merge.npy")
@@ -24,10 +25,11 @@ if __name__ == "__main__":
                                   pin_memory=False,
                                   drop_last=False)
 
-    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     model = SimpleCNN().to(device)
-    criterion = nn.CrossEntropyLoss().to(device)
+    #criterion = nn.CrossEntropyLoss().to(device)
+    criterion = FocalLoss(classes=2,alpha=torch.FloatTensor([0.1,1]).to(device)).to(device)
     optimizer = opt.Adam(model.parameters(), lr=0.001)
 
     EPOCHNUM = 10
