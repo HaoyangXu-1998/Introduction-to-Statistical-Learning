@@ -55,8 +55,9 @@ plt.ylabel('count')
 plt.show()
 
 # %%
-threshold = 1
+threshold = 0.5
 yr = [each for each in y if each>threshold]
+print(y.shape,len(yr))
 histnum = 100
 bins=np.arange(min(yr),max(yr),(max(yr)-min(yr))/histnum)
 plt.hist(yr,bins)
