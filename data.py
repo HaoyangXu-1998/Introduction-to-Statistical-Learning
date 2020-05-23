@@ -34,8 +34,11 @@ class load_data:
         self.dir = directory
         self.filepath = filename
 
+        print("begin to load X")
         self.X = np.load(self.X_path)
+        print("begin to load Y")
         self.Y = np.load(self.Y_path)
+        print("begin to load type")
         self.Type = np.load(self.Type_path)
 
     @property
@@ -52,21 +55,25 @@ class load_data:
 
     def transformX(self):
         # HWC2CHW
+        print("begin to transform X")
         self.X = self.X.transpose(0,3,1,2)
         return self
 
     def transformY(self):
+        print("begin to transform Y")
         self.Y = np.array([1 if each > 0 else 0 for each in self.Y])
         return self
 
     def filter_type(self, cond=lambda x: x == 1):
+        print("begin to filter type")
         mask = [i for i, flag in enumerate(self.Type) if cond(flag)]
         self.Type = self.Type[mask]
         self.X = self.X[mask]
         self.Y = self.Y[mask]
         return self
 
-    def filter_value(self, cond=lambda x: x != 0):
+    def filter_value(self, cond=lambda x: x > 0.5):
+        print("begin to filter value")
         mask = [i for i, flag in enumerate(self.Y) if cond(flag)]
         self.Type = self.Type[mask]
         self.X = self.X[mask]
@@ -74,13 +81,17 @@ class load_data:
         return self
 
     def filter_na(self):
-        mask = [i for i, flag in enumerate(self.Y) if flag != -9999]
+        print("begin to filter na")
+        maskx = [i for i,flag in enumerate(self.X) if any(flag.ravel()!=-9999)]
+        masky = [i for i, flag in enumerate(self.Y) if flag != -9999]
+        mask = np.unique(maskx+masky)
         self.Type = self.Type[mask]
         self.X = self.X[mask]
         self.Y = self.Y[mask]
         return self
 
     def split(self, test_size=0.2, seed=0):
+        print("begin to split dataset")
         length = len(self.Y)
         mask_train, mask_valid, _, _ = train_test_split(list(range(length)),
                                                         self.Y,
