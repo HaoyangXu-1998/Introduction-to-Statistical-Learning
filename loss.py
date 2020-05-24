@@ -38,3 +38,15 @@ class FocalLoss(nn.Module):
         else:
             loss = batchloss.sum()
         return loss
+
+class ExpandMSELoss(nn.Module):
+    def __init__(self):
+        super(ExpandMSELoss, self).__init__()
+        self.gamma = 4
+        self.mse = nn.MSELoss()
+
+    def forward(self, inputs, targets):
+        factor = targets ** (1/self.gamma)
+        inputs *= factor
+        targets *= factor
+        return self.mse(inputs,targets)
