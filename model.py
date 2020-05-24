@@ -59,8 +59,10 @@ class SimpleCNNClassification(nn.Module):
         nn.init.kaiming_normal_(self.mlp2.weight, mode="fan_in")
 
     def forward(self, x):
-        x = self.cam(x)*x
-        x = self.sam(x)*x
+        catt = self.cam(x)
+        x = catt*x
+        satt = self.sam(x)
+        x = satt*x
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
@@ -68,7 +70,7 @@ class SimpleCNNClassification(nn.Module):
         x = self.dropout(x)
         x = torch.tanh(x)
         x = self.mlp2(x)
-        return x
+        return x,catt,satt
     
     def __repr__(self):
         return "SimpleCNNClassification"
@@ -100,8 +102,10 @@ class SimpleCNNRegression(nn.Module):
         nn.init.kaiming_normal_(self.mlp2.weight, mode="fan_in")
 
     def forward(self, x):
-        x = self.cam(x)*x
-        x = self.sam(x)*x
+        catt = self.cam(x)
+        x = catt*x
+        satt = self.sam(x)
+        x = satt*x
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)
@@ -110,7 +114,7 @@ class SimpleCNNRegression(nn.Module):
         x = self.dropout(x)
         x = self.mlp2(x)
         x = F.relu(x)
-        return x.squeeze(1)
+        return x.squeeze(1),catt,satt
     
     def __repr__(self):
         return "SimpleCNNRegression"
