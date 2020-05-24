@@ -29,6 +29,8 @@ class load_data:
     Type_dir = "TypeIndex_batch"
     X_dir = "X_batch"
     Y_dir = "Y_batch"
+    Lat_dir = "Lat"
+    Lon_dir = "Lon"
 
     def __init__(self, directory, filename):
         self.dir = directory
@@ -40,6 +42,8 @@ class load_data:
         self.Y = np.load(self.Y_path)
         print("begin to load type")
         self.Type = np.load(self.Type_path)
+        self.Lat = None
+        self.Lon = None
 
     @property
     def X_path(self):
@@ -52,6 +56,14 @@ class load_data:
     @property
     def Type_path(self):
         return os.path.join(self.dir, self.Type_dir, self.filepath)
+    
+    @property
+    def Lat_path(self):
+        return os.path.join(self.dir, self.Lat_dir, self.filepath)
+    
+    @property
+    def Lon_path(self):
+        return os.path.join(self.dir, self.Lon_dir, self.filepath)
 
     def transformX(self):
         # HWC2CHW
@@ -62,6 +74,15 @@ class load_data:
     def transformY(self):
         print("begin to transform Y")
         self.Y = np.array([1 if each > 0 else 0 for each in self.Y])
+        return self
+    
+    def addSpatialInfo(self):
+        '''
+        should be call before transformX()
+        '''
+        self.Lat = np.load(self.Lat_path)
+        self.Lon = np.load(self.Lon_path)
+        self.X = np.concatenate((self.X, self.Lat[..., np.newaxis], self.Lon[..., np.newaxis]), -1)
         return self
 
     def filter_type(self, cond=lambda x: x == 1):
