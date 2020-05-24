@@ -20,7 +20,7 @@ if __name__ == "__main__":
     if TASK == "classification":
         train_dataset, valid_dataset = data.filter_na().filter_type().\
                                    transformX().transformY().split()
-        model = FFN().to(device)
+        model = SimpleCNNClassification().to(device)
         print("model %s param number: %s" %
               (repr(model), get_parameter_number(model)))
         criterion = nn.CrossEntropyLoss().to(device)

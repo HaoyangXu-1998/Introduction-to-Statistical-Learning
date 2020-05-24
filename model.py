@@ -65,23 +65,25 @@ class SimpleCNNClassification(nn.Module):
         super(SimpleCNNClassification, self).__init__()
         self.cam = ChannelAttentionModule(13,3)
         self.sam = SpatialAttentionModule()
-        self.conv1 = torch.nn.Sequential(
-            torch.nn.Conv2d(in_channels=13,
-                            out_channels=32,
-                            kernel_size=3,
-                            stride=2,
-                            padding=1), torch.nn.BatchNorm2d(32),
-            torch.nn.ReLU())
-        self.conv2 = torch.nn.Sequential(torch.nn.Conv2d(32, 64, 3, 2, 1),
+        self.conv1 = torch.nn.Sequential(torch.nn.Conv2d(13,32,3,1,1), 
+                                         torch.nn.BatchNorm2d(32),
+                                         torch.nn.ReLU(inplace=True),
+                                         nn.MaxPool2d(kernel_size=2, stride=2))
+        self.conv2 = torch.nn.Sequential(torch.nn.Conv2d(32,64,3,1,1), 
                                          torch.nn.BatchNorm2d(64),
-                                         torch.nn.ReLU())
-        self.conv3 = torch.nn.Sequential(torch.nn.Conv2d(64, 128, 2, 2, 0),
+                                         torch.nn.ReLU(inplace=True),
+                                         nn.MaxPool2d(kernel_size=2, stride=2))
+        self.conv3 = torch.nn.Sequential(torch.nn.Conv2d(64,128,3,1,1), 
                                          torch.nn.BatchNorm2d(128),
-                                         torch.nn.ReLU())
+                                         torch.nn.ReLU(inplace=True),
+                                         torch.nn.Conv2d(128,128,3,1,1),
+                                         torch.nn.BatchNorm2d(128),
+                                         torch.nn.ReLU(inplace=True),
+                                         nn.MaxPool2d(kernel_size=2, stride=2))
 
-        self.mlp1 = torch.nn.Linear(2 * 2 * 128, 100)
+        self.mlp1 = torch.nn.Linear(128, 64)
         self.dropout = nn.Dropout(0.5)
-        self.mlp2 = torch.nn.Linear(100, 2)
+        self.mlp2 = torch.nn.Linear(64, 2)
         nn.init.kaiming_normal_(self.mlp1.weight, mode="fan_in")
         nn.init.kaiming_normal_(self.mlp2.weight, mode="fan_in")
 
@@ -108,23 +110,25 @@ class SimpleCNNRegression(nn.Module):
         super(SimpleCNNRegression, self).__init__()
         self.cam = ChannelAttentionModule(13,3)
         self.sam = SpatialAttentionModule()
-        self.conv1 = torch.nn.Sequential(
-            torch.nn.Conv2d(in_channels=13,
-                            out_channels=32,
-                            kernel_size=3,
-                            stride=2,
-                            padding=1), torch.nn.BatchNorm2d(32),
-            torch.nn.ReLU())
-        self.conv2 = torch.nn.Sequential(torch.nn.Conv2d(32, 64, 3, 2, 1),
+        self.conv1 = torch.nn.Sequential(torch.nn.Conv2d(13,32,3,1,1), 
+                                         torch.nn.BatchNorm2d(32),
+                                         torch.nn.ReLU(inplace=True),
+                                         nn.MaxPool2d(kernel_size=2, stride=2))
+        self.conv2 = torch.nn.Sequential(torch.nn.Conv2d(32,64,3,1,1), 
                                          torch.nn.BatchNorm2d(64),
-                                         torch.nn.ReLU())
-        self.conv3 = torch.nn.Sequential(torch.nn.Conv2d(64, 128, 2, 2, 0),
+                                         torch.nn.ReLU(inplace=True),
+                                         nn.MaxPool2d(kernel_size=2, stride=2))
+        self.conv3 = torch.nn.Sequential(torch.nn.Conv2d(64,128,3,1,1), 
                                          torch.nn.BatchNorm2d(128),
-                                         torch.nn.ReLU())
+                                         torch.nn.ReLU(inplace=True),
+                                         torch.nn.Conv2d(128,128,3,1,1),
+                                         torch.nn.BatchNorm2d(128),
+                                         torch.nn.ReLU(inplace=True),
+                                         nn.MaxPool2d(kernel_size=2, stride=2))
 
-        self.mlp1 = torch.nn.Linear(2 * 2 * 128, 100)
+        self.mlp1 = torch.nn.Linear(128, 64)
         self.dropout = nn.Dropout(0.5)
-        self.mlp2 = torch.nn.Linear(100, 1)
+        self.mlp2 = torch.nn.Linear(64, 1)
         nn.init.kaiming_normal_(self.mlp1.weight, mode="fan_in")
         nn.init.kaiming_normal_(self.mlp2.weight, mode="fan_in")
 
