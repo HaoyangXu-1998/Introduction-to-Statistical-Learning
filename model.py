@@ -2,6 +2,33 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+class FFN(nn.Module):
+    def __init__(self):
+        super().__init__()
+        self.hidden = nn.Sequential(
+            nn.Linear(13*15*15, 256),
+            nn.ReLU(),
+            nn.Linear(256, 128),
+            nn.ReLU(),
+            nn.Linear(128, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 64),
+            nn.ReLU(),
+            nn.Linear(64, 32),
+            nn.Dropout(0.5),
+            nn.ReLU(),
+            nn.Linear(32, 2),
+        ) 
+    def forward(self, x):
+        in_size = x.size(0) #batch_size
+        x = x.view(in_size, -1)
+        return self.hidden(x),None,None
+    
+    def __repr__(self):
+        return "FFN"
+
 class ChannelAttentionModule(nn.Module):
     def __init__(self, channel, ratio):
         super(ChannelAttentionModule, self).__init__()

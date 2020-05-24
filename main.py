@@ -4,7 +4,7 @@ import torch.optim as opt
 from torch.utils.data import DataLoader
 import numpy as np
 from data import load_data, MeasureDataset
-from model import SimpleCNNClassification, SimpleCNNRegression
+from model import FFN,SimpleCNNClassification, SimpleCNNRegression
 from tqdm import tqdm
 from sklearn.metrics import classification_report, mean_squared_error
 from loss import FocalLoss, ExpandMSELoss
@@ -20,7 +20,7 @@ if __name__ == "__main__":
     if TASK == "classification":
         train_dataset, valid_dataset = data.filter_na().filter_type().\
                                    transformX().transformY().split()
-        model = SimpleCNNClassification().to(device)
+        model = FFN().to(device)
         print("model %s param number: %s" %
               (repr(model), get_parameter_number(model)))
         criterion = nn.CrossEntropyLoss().to(device)
@@ -105,9 +105,15 @@ if __name__ == "__main__":
             print("mse:%.4f,rate of baseline:%.4f" % (mse, rate))
 
         losses = {"train": np.mean(loss_train), "valid": np.mean(loss_valid)}
-        attentions = {
-            "channel": torch.cat(catt_valid,0).detach().cpu().numpy(),
-            "spatial": torch.cat(satt_valid,0).detach().cpu().numpy()
-        }
+        if any([each is None for each in catt_valid]):
+            attentions = {
+                "channel": None,
+                "spatial": None
+            }
+        else:
+            attentions = {
+                "channel": torch.cat(catt_valid,0).detach().cpu().numpy(),
+                "spatial": torch.cat(satt_valid,0).detach().cpu().numpy()
+            }
         save_result(TASK, model, epoch, y_valid, pred_valid, losses,
                     attentions)
