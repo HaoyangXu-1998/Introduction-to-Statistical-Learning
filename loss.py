@@ -39,6 +39,7 @@ class FocalLoss(nn.Module):
             loss = batchloss.sum()
         return loss
 
+
 class ExpandMSELoss(nn.Module):
     def __init__(self):
         super(ExpandMSELoss, self).__init__()
@@ -46,18 +47,20 @@ class ExpandMSELoss(nn.Module):
         self.mse = nn.MSELoss()
 
     def forward(self, inputs, targets):
-        factor = targets ** (1/self.gamma)
+        factor = targets**(1 / self.gamma)
         inputs *= factor
         targets *= factor
-        return self.mse(inputs,targets)
-        
+
+        return self.mse(inputs, targets)
+
 class CombinedLoss(nn.Module):
     def __init__(self, alpha=10, size_average=True):
         super(CombinedLoss, self).__init__()
         self.alpha = alpha
         self.size_average = size_average
         self.mse = nn.MSELoss()
-        self.CE  = nn.CrossEntropyLoss()
+        self.CE = nn.CrossEntropyLoss()
+
     def forward(self, inputs, targets):
         batch_loss = self.CE(inputs[:, 0:2], targets[:, 0].long()) + self.alpha * self.mse(inputs[:, 2], targets[:, 1])
         if self.size_average:
@@ -65,4 +68,3 @@ class CombinedLoss(nn.Module):
         else:
             return batch_loss
 
-         

@@ -7,7 +7,7 @@ from data import load_data, MeasureDataset
 from model import SimpleCNNClassification, SimpleCNNRegression
 from tqdm import tqdm
 from sklearn.metrics import classification_report, mean_squared_error
-from loss import FocalLoss, ExpandMSELoss
+from loss import FocalLoss, ExpandMSELoss, CombinedLoss
 from utils import get_parameter_number, save_result
 
 TASK = "classification"
