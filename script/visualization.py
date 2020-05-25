@@ -66,3 +66,13 @@ plt.ylabel('count')
 plt.show()
 
 # %%
+ckpt = torch.load("result/{Your Path}")
+y_valid = np.array(ckpt['y'])
+pred_valid = np.array(ckpt['pred'])
+order = np.argsort(y_valid)
+y_valid_ordered = y_valid[order]
+pred_valid_ordered = pred_valid[order]
+plt.figure()
+plt.scatter(x=np.arange(sum(y_valid>0)), y=pred_valid_ordered[y_valid_ordered > 0], label="pred", s=5)
+plt.scatter(x=np.arange(sum(y_valid>0)), y=y_valid_ordered[y_valid_ordered > 0], label="true", s=5)
+plt.legend()
