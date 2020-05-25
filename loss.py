@@ -50,3 +50,11 @@ class ExpandMSELoss(nn.Module):
         inputs *= factor
         targets *= factor
         return self.mse(inputs,targets)
+class CombinedLoss(nn.Module):
+    def __init__(self, alpha):
+        super(CombinedLoss, self).__init__()
+        self.alpha = alpha
+        self.mse = nn.MSELoss()
+        self.CE  = nn.CrossEntropyLoss()
+    def forward(self, inputs, targets):
+        return self.CE(inputs[:, 0:2], targets[:, 0]) + self.alpha * self.mse(inputs[:, 2], targets[:, 1])
