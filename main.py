@@ -10,7 +10,7 @@ from sklearn.metrics import classification_report, mean_squared_error
 from loss import FocalLoss, ExpandMSELoss
 from utils import get_parameter_number, save_result
 
-TASK = "classification"
+TASK = "regression"
 
 if __name__ == "__main__":
     device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
@@ -32,8 +32,8 @@ if __name__ == "__main__":
         model = SimpleCNNRegression().to(device)
         print("model %s param number: %s" %
               (repr(model), get_parameter_number(model)))
-        #criterion = MSELoss().to(device)
-        criterion = ExpandMSELoss().to(device)
+        criterion = nn.MSELoss().to(device)
+        #criterion = ExpandMSELoss().to(device)
         optimizer = opt.Adam(model.parameters(), lr=1e-4, weight_decay=5e-7)
 
     train_dataloader = DataLoader(train_dataset,

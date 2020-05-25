@@ -106,10 +106,12 @@ class SimpleCNNClassification(nn.Module):
 
 
 class SimpleCNNRegression(nn.Module):
-    def __init__(self):
+    def __init__(self,atten=False):
         super(SimpleCNNRegression, self).__init__()
-        self.cam = ChannelAttentionModule(13,3)
-        self.sam = SpatialAttentionModule()
+        self.atten = atten
+        if self.atten:
+            self.cam = ChannelAttentionModule(13,3)
+            self.sam = SpatialAttentionModule()
         self.conv1 = torch.nn.Sequential(torch.nn.Conv2d(13,32,3,1,1), 
                                          torch.nn.BatchNorm2d(32),
                                          torch.nn.ReLU(inplace=True),
@@ -133,10 +135,14 @@ class SimpleCNNRegression(nn.Module):
         nn.init.kaiming_normal_(self.mlp2.weight, mode="fan_in")
 
     def forward(self, x):
-        catt = self.cam(x)
-        x = catt*x
-        satt = self.sam(x)
-        x = satt*x
+        if self.atten:
+            catt = self.cam(x)
+            x = catt*x
+            satt = self.sam(x)
+            x = satt*x
+        else:
+            catt = None
+            satt = None
         x = self.conv1(x)
         x = self.conv2(x)
         x = self.conv3(x)

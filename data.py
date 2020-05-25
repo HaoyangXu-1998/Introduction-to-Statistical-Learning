@@ -72,7 +72,7 @@ class load_data:
         self.Y = self.Y[mask]
         return self
 
-    def filter_value(self, cond=lambda x: x > 0.5):
+    def filter_value(self, cond=lambda x: x > 0):
         print("begin to filter value")
         mask = [i for i, flag in enumerate(self.Y) if cond(flag)]
         self.Type = self.Type[mask]
