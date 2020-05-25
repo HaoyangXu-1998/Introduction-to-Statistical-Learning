@@ -8,7 +8,7 @@ def get_parameter_number(net):
     return {'Total': total_num, 'Trainable': trainable_num}
 
 
-def save_result(TASK, model, EPOCH, yvalid, predvalid, losses, attentions):
+def save_result(TASK, model, EPOCH, yvalid, predvalid, losses, attentions=None):
     save_file_dir = os.path.join("result", TASK, repr(model))
     if not os.path.exists(save_file_dir):
         os.makedirs(save_file_dir)

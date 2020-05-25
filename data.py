@@ -93,14 +93,16 @@ class load_data:
     def split(self, test_size=0.2, seed=0):
         print("begin to split dataset")
         length = len(self.Y)
-        mask_train, mask_valid, _, _ = train_test_split(list(range(length)),
-                                                        self.Y,
-                                                        test_size=test_size,
-                                                        random_state=seed)
-        return MeasureDataset(self.X[mask_train], self.Y[mask_train],
-                              "train"), MeasureDataset(self.X[mask_valid],
-                                                       self.Y[mask_valid],
-                                                       "valid")
+        mask_train, mask_valid, _, _ = train_test_split(list(range(length)), 
+        self.Y, 
+        test_size=test_size, 
+        random_state=seed)
+        return MeasureDataset(self.X[mask_train], self.Y[mask_train], "train"), MeasureDataset(self.X[mask_valid], self.Y[mask_valid], "valid")
     
+    def transformY_2D(self, cond=lambda x: x > 0):
+        print("begin to transform Y to 2D array")
+        mask = cond(self.Y)
+        self.Y = np.column_stack((mask, self.Y))
+        return self
     def data(self):
         return MeasureDataset(self.X,self.Y)

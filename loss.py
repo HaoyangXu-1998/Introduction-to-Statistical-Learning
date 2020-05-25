@@ -58,11 +58,11 @@ class CombinedLoss(nn.Module):
         self.size_average = size_average
         self.mse = nn.MSELoss()
         self.CE  = nn.CrossEntropyLoss()
-    def forward(self, inputs, targets):
-        batch_loss = self.CE(inputs[:, 0:2], targets[:, 0].long()) + self.alpha * self.mse(inputs[:, 2], targets[:, 1])
+    def forward(self, clsf, reg, targets):
+        batch_loss = self.CE(clsf, targets[:, 0].long()) + self.alpha * self.mse(reg, targets[:, 1])
         if self.size_average:
-            return batch_loss / inputs.shape[0]
+            return batch_loss.mean()
         else:
-            return batch_loss
+            return batch_loss.sum()
 
          
