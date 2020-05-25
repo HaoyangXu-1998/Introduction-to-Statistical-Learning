@@ -51,7 +51,7 @@ class ExpandMSELoss(nn.Module):
         targets *= factor
         return self.mse(inputs,targets)
 class CombinedLoss(nn.Module):
-    def __init__(self, alpha):
+    def __init__(self, alpha=10):
         super(CombinedLoss, self).__init__()
         self.alpha = alpha
         self.mse = nn.MSELoss()
