@@ -72,7 +72,7 @@ class load_data:
         self.Y = self.Y[mask]
         return self
 
-    def filter_value(self, cond=lambda x: x > 0.5):
+    def filter_value(self, cond=lambda x: x > 0):
         print("begin to filter value")
         mask = [i for i, flag in enumerate(self.Y) if cond(flag)]
         self.Type = self.Type[mask]
@@ -82,9 +82,9 @@ class load_data:
 
     def filter_na(self):
         print("begin to filter na")
-        maskx = [i for i,flag in enumerate(self.X) if any(flag.ravel()!=-9999)]
-        masky = [i for i, flag in enumerate(self.Y) if flag != -9999]
-        mask = np.unique(maskx+masky)
+        maskx = [i for i,flag in enumerate(self.X) if all(flag.ravel() >= 0)]
+        masky = [i for i, flag in enumerate(self.Y) if flag >= 0]
+        mask = np.intersect1d(maskx, masky)
         self.Type = self.Type[mask]
         self.X = self.X[mask]
         self.Y = self.Y[mask]
