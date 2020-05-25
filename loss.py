@@ -50,11 +50,19 @@ class ExpandMSELoss(nn.Module):
         inputs *= factor
         targets *= factor
         return self.mse(inputs,targets)
+        
 class CombinedLoss(nn.Module):
-    def __init__(self, alpha=10):
+    def __init__(self, alpha=10, size_average=True):
         super(CombinedLoss, self).__init__()
         self.alpha = alpha
+        self.size_average = size_average
         self.mse = nn.MSELoss()
         self.CE  = nn.CrossEntropyLoss()
     def forward(self, inputs, targets):
-        return self.CE(inputs[:, 0:2], targets[:, 0]) + self.alpha * self.mse(inputs[:, 2], targets[:, 1])
+        batch_loss = self.CE(inputs[:, 0:2], targets[:, 0].long()) + self.alpha * self.mse(inputs[:, 2], targets[:, 1])
+        if self.size_average:
+            return batch_loss / inputs.shape[0]
+        else:
+            return batch_loss
+
+         
