@@ -59,10 +59,8 @@ class CombinedLoss(nn.Module):
         self.mse = nn.MSELoss()
         self.CE  = nn.CrossEntropyLoss()
     def forward(self, clsf, reg, targets):
-        batch_loss = self.CE(clsf, targets[:, 0].long()) + self.alpha * self.mse(reg, targets[:, 1])
-        if self.size_average:
-            return batch_loss.mean()
-        else:
-            return batch_loss.sum()
+        pr = torch.argmax(clsf,1).float().mean()
+        batch_loss = (1-pr)*self.CE(clsf, targets[:, 0].long()) + pr*self.alpha * self.mse(reg, targets[:, 1])
+        return batch_loss
 
          
