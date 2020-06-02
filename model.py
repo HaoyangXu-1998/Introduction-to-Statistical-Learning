@@ -92,9 +92,11 @@ class SimpleCNNRegression(nn.Module):
                                          torch.nn.BatchNorm2d(128),
                                          torch.nn.ReLU())
 
-        self.mlp1 = torch.nn.Linear(2 * 2 * 128, 100)
+        self.mlp1 = torch.nn.Linear(2 * 2 * 128, 64)
         self.dropout = nn.Dropout(0.5)
-        self.mlp2 = torch.nn.Linear(100, 1)
+        self.mlp21 = torch.nn.Linear(64, 2)
+        self.mlp22 = torch.nn.Linear(64, 2)
+        self.mlp3 = torch.nn.Linear(4, 1)
 
     def forward(self, x):
         x = self.conv1(x)
@@ -103,9 +105,11 @@ class SimpleCNNRegression(nn.Module):
         x = self.mlp1(x.view(x.size(0), -1))
         x = F.relu(x)
         x = self.dropout(x)
-        x = self.mlp2(x)
-        x = F.relu(x)
-        return x.squeeze(1)
+        x1 = self.mlp21(x)
+        x2 = self.mlp22(x)
+        x = F.relu(self.mlp3(torch.cat((x1,x2),1)))
+        x1 = F.softmax(x1,1)
+        return x1,x.squeeze(1)
     def __repr__(self):
         return "SimpleCNNRegression"
 
