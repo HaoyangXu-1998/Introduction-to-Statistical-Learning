@@ -15,7 +15,7 @@ import matplotlib.pyplot as plt
 # %%
 filter_0 = False
 if __name__ == "__main__":
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:1" if torch.cuda.is_available() else "cpu")
 
     print("begin to load data")
     data = load_data("data", "merge.npy")
@@ -87,7 +87,7 @@ if __name__ == "__main__":
 
 # %%
     # No attention
-    criterion2 = ExpandMSELoss().to(device)
+    criterion2 = nn.MSELoss().to(device)
     optimizer = opt.Adam(model.parameters(), lr=1e-4,weight_decay=1e-2)
     EPOCHNUM = 20
     for epoch in range(EPOCHNUM):
