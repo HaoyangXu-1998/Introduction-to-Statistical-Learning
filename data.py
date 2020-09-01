@@ -90,19 +90,33 @@ class load_data:
         self.Y = self.Y[mask]
         return self
 
-    def split(self, test_size=0.2, seed=0):
+    def split(self, test_size=None, seed=0):
+        if test_size is None:
+            test_size = [0.1,0.1]
         print("begin to split dataset")
         length = len(self.Y)
         mask_train, mask_valid, _, _ = train_test_split(list(range(length)), 
         self.Y, 
-        test_size=test_size, 
+        test_size=sum(test_size), 
         random_state=seed)
-        return MeasureDataset(self.X[mask_train], self.Y[mask_train], "train"), MeasureDataset(self.X[mask_valid], self.Y[mask_valid], "valid")
+        data = {}
+        data["train"] = (self.X[mask_train],self.Y[mask_train])
+        X_valid = self.X[mask_valid]
+        Y_valid = self.Y[mask_valid]
+        length = len(Y_valid)
+        mask_train, mask_valid, _, _ = train_test_split(list(range(length)), 
+        Y_valid, 
+        test_size=test_size[1]/sum(test_size), 
+        random_state=seed)
+        data["valid"] = (X_valid[mask_train],Y_valid[mask_train])
+        data["test"] = (X_valid[mask_valid],Y_valid[mask_valid])
+        return (MeasureDataset(item[0],item[1],key) for key,item in data.items())
     
     def transformY_2D(self, cond=lambda x: x > 0):
         print("begin to transform Y to 2D array")
         mask = cond(self.Y)
         self.Y = np.column_stack((mask, self.Y))
         return self
+        
     def data(self):
         return MeasureDataset(self.X,self.Y)
